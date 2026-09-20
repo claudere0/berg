@@ -1,15 +1,21 @@
 from src.core.settings import *
 from src.core.states import *
+from src.core.event_bus import EventBus
 
 class Game:
     def __init__(self):
         pygame.init()
 
         self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-        pygame.display.set_caption('rime and pebble')
+        self.native_surface = pygame.Surface((NATIVE_WIDTH, NATIVE_HEIGHT))
+        pygame.display.set_caption('Berg & Woolly')
         self.clock = pygame.time.Clock()
         self.running = True
 
+        self.event_bus = EventBus()
+        self.current_day = 1 # Progression tracking
+
+        # Pass game reference to states
         self.states = {
             StateID.MENU: MenuState(self),
             StateID.PLAYING: PlayingState(self),
@@ -40,8 +46,9 @@ class Game:
     def update(self, dt):
         self.current_state.update(dt)
 
-    def draw(self, screen):
-        self.current_state.draw(screen)
+    def draw(self):
+        # States receive both the low-res surface and high-res screen for hybrid rendering
+        self.current_state.draw(self.native_surface, self.screen)
         pygame.display.flip()
 
     def run(self):
@@ -49,7 +56,7 @@ class Game:
             dt = self.clock.tick(FPS) / 1000
             self.events()
             self.update(dt)
-            self.draw(self.screen)
+            self.draw()
 
         pygame.quit()
 

@@ -30,7 +30,6 @@ class State:
 class MenuState(State):
     def __init__(self, game):
         super().__init__(game)
-        self.game.audio.play_music('menu.mp3', fade_ms=2000)
         self.options = ["PLAY", "SETTINGS", "QUIT"]
         self.selected_index = 0
         self.font_large = pygame.font.SysFont('courier', 64)
